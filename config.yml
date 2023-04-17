@@ -1,0 +1,8 @@
+default:
+  datapath: "../data"
+  main: "fake_data.csv"
+  workitems: "work_items.csv"
+  roles: "roles.csv"
+  
+production:
+  dataset: "data.csv"

@@ -1,0 +1,71 @@
+item, exp_hours, period, role, start_dt, end_dt
+tour theater,2,week,manager,20230101,20251231
+review budget,2,week,manager,20230101,20251231
+payroll,2,week,manager,20230101,20251231
+supervise customer trans,20,week,manager,20230101,20251231
+special project 1,10,week,manager,20230101,20230831
+special project 2,10,week,manager,20230901,20240430
+special project 3,10,week,manager,20230501,20251231
+review schedules,2,week,manager,20230101,20251231
+tour theater,1,week,shift supervisor 1,20230101,20251231
+review budget,1,week,shift supervisor 1,20230101,20251231
+prepare movie schedule,1,week,shift supervisor 1,20230101,20251231
+backup projection,2,week,shift supervisor 1,20230101,20251231
+backup customer trans,2,week,shift supervisor 1,20230101,20251231
+prepare worker schedule,1,week,shift supervisor 1,20230101,20251231
+supervise customer trans,30,week,shift supervisor 1,20230101,20251231
+tour theater,1,week,shift supervisor 2,20230101,20251231
+review budget,1,week,shift supervisor 2,20230101,20251231
+prepare movie schedule,1,week,shift supervisor 2,20230101,20251231
+backup projection,2,week,shift supervisor 2,20230101,20251231
+backup customer trans,2,week,shift supervisor 2,20230101,20251231
+prepare worker schedule,1,week,shift supervisor 2,20230101,20251231
+supervise customer trans,30,week,shift supervisor 2,20230101,20251231
+load popcorn machine,1,week,theater ops specialist sr 1, 20230101, 20251231
+load soda syrup,1,week,theater ops specialist sr 1, 20230101, 20251231
+customer trans: concessions,8,week,theater ops specialist sr 1, 20230101, 20251231
+prepare movie schedule,8,week,theater ops specialist sr 1, 20230101, 20251231
+customer trans: tickets,0.5,week,theater ops specialist sr 1, 20230101, 20251231
+change ads,0.5,week,theater ops specialist sr 1, 20230101, 20251231
+thread projector,0.5,week,theater ops specialist sr 1, 20230101, 20251231
+build movie,0.5,week,theater ops specialist sr 1, 20230101, 20251231
+review tickets,2,week,theater ops specialist sr 1, 20230101, 20251231
+tour theater,1,week,theater ops specialist sr 1, 20230101, 20251231
+load popcorn machine,1,week,theater ops specialist sr 2, 20230101, 20251231
+load soda syrup,1,week,theater ops specialist sr 2, 20230101, 20251231
+customer trans: concessions,8,week,theater ops specialist sr 2, 20230101, 20251231
+prepare movie schedule,8,week,theater ops specialist sr 2, 20230101, 20251231
+customer trans: tickets,0.5,week,theater ops specialist sr 2, 20230101, 20251231
+change ads,0.5,week,theater ops specialist sr 2, 20230101, 20251231
+thread projector,0.5,week,theater ops specialist sr 2, 20230101, 20251231
+build movie,0.5,week,theater ops specialist sr 2, 20230101, 20251231
+review tickets,2,week,theater ops specialist sr 2, 20230101, 20251231
+tour theater,1,week,theater ops specialist sr 2, 20230101, 20251231
+load popcorn machine,1,week,theater ops specialist sr 3, 20230101, 20251231
+load soda syrup,1,week,theater ops specialist sr 3, 20230101, 20251231
+customer trans: concessions,8,week,theater ops specialist sr 3, 20230101, 20251231
+prepare movie schedule,8,week,theater ops specialist sr 3, 20230101, 20251231
+customer trans: tickets,0.5,week,theater ops specialist sr 3, 20230101, 20251231
+change ads,0.5,week,theater ops specialist sr 3, 20230101, 20251231
+thread projector,0.5,week,theater ops specialist sr 3, 20230101, 20251231
+build movie,0.5,week,theater ops specialist sr 3, 20230101, 20251231
+review tickets,2,week,theater ops specialist sr 3, 20230101, 20251231
+tour theater,1,week,theater ops specialist sr 3, 20230101, 20251231
+load popcorn machine,1,week,theater ops specialist 1, 20230101, 20251231
+load soda syrup,1,week,theater ops specialist 1, 20230101, 20251231
+customer trans: concessions,10,week,theater ops specialist 1, 20230101, 20251231
+customer trans: tickets,8,week,theater ops specialist 1, 20230101, 20251231
+review tickets,2,week,theater ops specialist 1, 20230101, 20251231
+tour theater,1,week,theater ops specialist 1, 20230101, 20251231
+load popcorn machine,1,week,theater ops specialist 2, 20230101, 20251231
+load soda syrup,1,week,theater ops specialist 2, 20230101, 20251231
+customer trans: concessions,10,week,theater ops specialist 2, 20230101, 20251231
+customer trans: tickets,8,week,theater ops specialist 2, 20230101, 20251231
+review tickets,2,week,theater ops specialist 2, 20230101, 20251231
+tour theater,1,week,theater ops specialist 2, 20230101, 20251231
+load popcorn machine,1,week,theater ops specialist 3, 20230101, 20251231
+load soda syrup,1,week,theater ops specialist 3, 20230101, 20251231
+customer trans: concessions,10,week,theater ops specialist 3, 20230101, 20251231
+customer trans: tickets,8,week,theater ops specialist 3, 20230101, 20251231
+review tickets,2,week,theater ops specialist 3, 20230101, 20251231
+tour theater,1,week,theater ops specialist 3, 20230101, 20251231
