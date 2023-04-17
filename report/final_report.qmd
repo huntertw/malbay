@@ -1,0 +1,301 @@
+---
+title: "Workload Model"
+subtitle: "A summary of the workload model created for this organization"
+title-block-banner: true
+title-block-style: plain
+format:
+  html:
+    toc: true
+    toc-location: left
+    toc-title: Contents
+    css: styles.css
+    code-fold: true
+---
+
+## Introduction
+
+Some words about what this report will show. 
+
+
+```{r setup}
+here::i_am("final_report.qmd")
+library(here)
+library(ggplot2)
+library(dplyr)
+library(ztable)
+
+cfg <- config::get()
+
+ggplot2::theme_set(theme_bw())
+
+# TODO
+# - add color pallette that aligns to malbay
+# - add a label to work items graph to show what each mark means
+# - figure out why rendering looks a little blurry
+# - 90 degree angle of header row on heatmap or some other solution
+# - Improve heatmap by
+    # - making text smaller?
+    # - Add tool tips with totals for columns and rows?
+    # - 
+# - After I get feedback on each view, start adding in data validation checks
+# Can I adjust the scroll to scroll and not jump
+
+# Next Steps
+# Get it on a GitHub page
+# Get rid of unnecessary text...
+# Change the base color to not be black or grey...make it pop
+
+
+
+
+
+
+```
+
+## Data
+
+### Reading in Data
+
+Hours by work item and role
+
+```{r}
+
+main_dat <- readr::read_csv(here(cfg$datapath, cfg$main))
+
+glimpse(main_dat)
+
+```
+
+
+Work items and expected hours
+
+```{r}
+
+workitems_dat <- readr::read_csv(here(cfg$datapath, cfg$workitems))
+
+glimpse(workitems_dat)
+
+```
+
+
+
+
+
+### Validating Data
+
+Output from confirming data
+
+- Number rows
+- Total hours
+- Total roles
+- Total tasks
+- Sum of planned hours should meet total number of fours after accounting for admin
+- Sum of planned hours for each ind should meet expected supply, highlight above or below
+- All individuals or roles should be included in the data set 
+(placeholder inds can exist for planning)
+- Sum of planned hours **within each period (week, month, year, etc.)** should
+meet total number of hours after accounting for admin
+- Sum of planned hours for **each individual or role within each period**
+should meet total number of hours after accounting for administrative activities
+- All tasks should be included, even if there is no alignment. 
+The latter should be highlighted.
+- Each ind's maximum and minimum dates should cover the full timeline. If they 
+don't, the fact should be highlighted.
+
+Other ideas?
+
+### Adjusting Data
+
+This section could include applying global parameters that aren't already built
+in to the provided data set.
+
+## Hours by work item
+
+The first section reviews the number of hours by work item.
+
+```{r}
+
+# prepare data
+hours_by_item <- main_dat %>% 
+  group_by(item) %>% 
+  summarize(hours = sum(exp_hours)) %>% 
+  full_join(workitems_dat) %>% 
+  mutate(item = forcats::fct_infreq(item, w = hours_required)) %>% 
+  tidyr::replace_na(list(hours = 0))
+
+xlab <- unique(main_dat$period)
+stopifnot("period must be on the same time frame" = length(xlab) == 1)
+  
+  
+# Create graph
+hours_by_item %>% 
+  ggplot(aes(y = forcats::fct_rev(item))) +
+  geom_col(aes(x = hours)) +
+  geom_point(aes(x = hours_required)) +
+  labs(title = "Hours by work item",
+       y = "Work item", 
+       x = paste0("Hours per ", xlab))
+
+```
+
+
+## Hours by individual and work item
+
+This section shows the expect time for each task grouped by individuals or roles.
+
+Outset content...
+
+
+```{r}
+#| fig-width: 13.5
+#| fig-height: 6.6
+#| column: screen-inset-right
+
+
+# prepare data
+hours_by_item_role <- main_dat %>%
+  group_by(item, role) %>%
+  summarize(hours = sum(exp_hours), .groups = "drop") %>%  
+  # full_join(workitems_dat) %>%
+  mutate(item = forcats::fct_infreq(item, w = hours)) #%>%
+  # tidyr::replace_na(list(hours = 0))
+
+xlab <- unique(main_dat$period)
+stopifnot("period must be on the same time frame" = length(xlab) == 1)
+  
+  
+# Create graph
+hours_by_item_role %>% 
+  ggplot() +
+  geom_col(aes(x = hours, y = forcats::fct_rev(item)), position = "dodge") +
+  facet_wrap(.~role, scale = "free_y", nrow = 3) +
+  labs(title = "Hours by work item",
+       y = "Work item", 
+       x = paste0("Hours per ", xlab))
+
+
+
+```
+
+
+
+- Work items + individual or role on rows
+- Bars that represent hours in each combo
+
+
+## Gantt Chart
+
+```{r}
+#| fig-width: 14.6
+#| fig-height: 7
+#| column: screen-inset-right
+#| 
+main_dat %>% 
+  # filter(role == "manager") %>% 
+  ggplot(aes(x=lubridate::ymd(start_dt), xend=lubridate::ymd(end_dt), y=item, yend=item)) +
+  # theme_bw()+ #use ggplot theme with black gridlines and white background
+  geom_segment(linewidth=3) + #increase line width of segments in the chart
+  facet_wrap(.~role, scales = "free_y") +
+  labs(title='Schedule', x='Time', y='Work Item')
+
+```
+
+
+- Individuals or roles on grouped rows
+- Show by month or year or something
+- Each bar represents a task
+- Maybe it is a graph for each person? Will need to figure this out.
+
+## Heatmap
+
+- work item details on rows
+- individuals or roles on columns
+- heatmap of proportion of time or total time or whatever
+
+### Prep data
+
+```{r}
+
+hm_dat <- main_dat %>% 
+  select(item, exp_hours, role) %>% 
+  tidyr::pivot_wider(names_from = role, 
+                     values_from = exp_hours) %>% 
+  as.data.frame()
+
+```
+
+
+### ztable
+
+Version 1
+
+```{r}
+#| output: 'asis'
+#| column: screen-inset-right
+# https://cran.r-project.org/web/packages/ztable/vignettes/heatmapTable.html
+options(ztable.type = "html")
+
+# create view
+hm_dat %>% 
+  ztable(rotate = TRUE, turn=TRUE, angle = 90) %>% 
+  makeHeatmap(margin = 2) %>% 
+  print(caption = 'How does this look?')
+
+```
+
+### gt
+
+Version 2
+
+```{r}
+#| output: 'asis'
+#| column: screen-inset-right
+# https://stackoverflow.com/questions/65327289/
+# how-to-represent-a-datatable-in-r-as-a-heatmap
+
+# prep data
+library(gt)
+hm_dat %>% 
+  gt() %>% 
+  data_color(columns = manager:`theater ops specialist 3`, 
+             direction = "column",
+             na_color = "white", 
+             palette = "Oranges")
+```
+
+### flextable
+
+Version 3: TODO
+
+```{r}
+#| output: 'asis'
+#| column: screen-inset-right
+# https://www.ardata.fr/en/flextable-gallery/2021-03-29-gradient-colored-table/
+
+# prep data'
+library(knitr)
+library(kableExtra)
+ktab <- main_dat %>% 
+  select(item, exp_hours, role) %>% 
+  tidyr::pivot_wider(names_from = role, 
+                     values_from = exp_hours) %>% 
+  as.data.frame() %>% 
+  kable(format = 'html')
+
+
+
+ktab %>% 
+  kable_paper("striped", full_width = F) %>%
+  row_spec(0, angle = -90) %>% 
+  row_spec(0, align = "r")
+  
+```
+
+
+## Other ideas
+
+- A view that highlights unfulfilled hours or work items
+
+## Questions that need to be answered in report
+- How many people would it take to do 100% of the required work?
+- How do things change as the quality of work changes (increases or decreases)?

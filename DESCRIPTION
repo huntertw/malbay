@@ -1,0 +1,13 @@
+Package: project
+Title: Create a Report Summarizing a Workload Model  (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person("Hunter", "Wagner", , "huntertw@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package will be used to build a report in a format that aligns
+    with requirements from Malbay Strategic Consulting. The goal of the report
+    is to be sufficient to use with many clients.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.0
