@@ -203,8 +203,21 @@ Attaching package: 'dplyr'</code></pre>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_set</span>(<span class="fu">theme_bw</span>())</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># </span><span class="al">TODO</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># - set theme for graph that aligns with malbay</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - add a label to work items graph to show what each mark means</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># - add color pallette that aligns to malbay</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># - add a label to work items graph to show what each mark means</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co"># - figure out why rendering looks a little blurry</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># - 90 degree angle of header row on heatmap or some other solution</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="co"># - Improve heatmap by</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># - making text smaller?</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># - Add tool tips with totals for columns and rows?</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># - </span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># - After I get feedback on each view, start adding in data validation checks</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Can I adjust the scroll to scroll and not jump</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Next Steps</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Get it on a GitHub page</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Get rid of unnecessary text...</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Change the base color to not be black or grey...make it pop</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -377,14 +390,10 @@ $ hours_required &lt;dbl&gt; 4.0, 4.0, 1.5, 1.5, 54.0, 25.5, 6.0, 6.0, 2.0, 26.0
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># filter(role == "manager") %&gt;% </span></span>
 <span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x=</span>lubridate<span class="sc">::</span><span class="fu">ymd</span>(start_dt), <span class="at">xend=</span>lubridate<span class="sc">::</span><span class="fu">ymd</span>(end_dt), <span class="at">y=</span>item, <span class="at">yend=</span>item)) <span class="sc">+</span></span>
 <span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># theme_bw()+ #use ggplot theme with black gridlines and white background</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">size=</span><span class="dv">3</span>) <span class="sc">+</span> <span class="co">#increase line width of segments in the chart</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">linewidth=</span><span class="dv">3</span>) <span class="sc">+</span> <span class="co">#increase line width of segments in the chart</span></span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(.<span class="sc">~</span>role, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">'Schedule'</span>, <span class="at">x=</span><span class="st">'Time'</span>, <span class="at">y=</span><span class="st">'Work Item'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
-</div>
 <div class="cell-output-display column-screen-inset-right">
 <p><img src="final_report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="1401"></p>
 </div>
@@ -408,11 +417,11 @@ $ hours_required &lt;dbl&gt; 4.0, 4.0, 1.5, 1.5, 54.0, 25.5, 6.0, 6.0, 2.0, 26.0
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>hm_dat <span class="ot">&lt;-</span> main_dat <span class="sc">%&gt;%</span> </span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(item, exp_hours, role) <span class="sc">%&gt;%</span> </span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> role, </span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values_from =</span> exp_hours) <span class="sc">%&gt;%</span> </span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>hm_dat <span class="ot">&lt;-</span> main_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(item, exp_hours, role) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> role, </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values_from =</span> exp_hours) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 </section>
@@ -422,14 +431,14 @@ $ hours_required &lt;dbl&gt; 4.0, 4.0, 1.5, 1.5, 54.0, 25.5, 6.0, 6.0, 2.0, 26.0
 <div class="cell column-screen-inset-right">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://cran.r-project.org/web/packages/ztable/vignettes/heatmapTable.html</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">ztable.type =</span> <span class="st">"html"</span>)</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create view</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>hm_dat <span class="sc">%&gt;%</span> </span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ztable</span>(<span class="at">rotate =</span> <span class="cn">TRUE</span>, <span class="at">turn=</span><span class="cn">TRUE</span>, <span class="at">angle =</span> <span class="dv">90</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">makeHeatmap</span>(<span class="at">margin =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">caption =</span> <span class="st">'How does this look?'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://cran.r-project.org/web/packages/ztable/vignettes/heatmapTable.html</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">ztable.type =</span> <span class="st">"html"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create view</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>hm_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ztable</span>(<span class="at">rotate =</span> <span class="cn">TRUE</span>, <span class="at">turn=</span><span class="cn">TRUE</span>, <span class="at">angle =</span> <span class="dv">90</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">makeHeatmap</span>(<span class="at">margin =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="at">caption =</span> <span class="st">'How does this look?'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 
 
@@ -1069,37 +1078,37 @@ review tickets
 <div class="cell page-columns page-full">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://stackoverflow.com/questions/65327289/</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="co"># how-to-represent-a-datatable-in-r-as-a-heatmap</span></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co"># prep data</span></span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>hm_dat <span class="sc">%&gt;%</span> </span>
-<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_color</span>(<span class="at">columns =</span> manager<span class="sc">:</span><span class="st">`</span><span class="at">theater ops specialist 3</span><span class="st">`</span>, </span>
-<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">direction =</span> <span class="st">"column"</span>,</span>
-<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">na_color =</span> <span class="st">"white"</span>, </span>
-<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette =</span> <span class="st">"Oranges"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://stackoverflow.com/questions/65327289/</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># how-to-represent-a-datatable-in-r-as-a-heatmap</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># prep data</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>hm_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_color</span>(<span class="at">columns =</span> manager<span class="sc">:</span><span class="st">`</span><span class="at">theater ops specialist 3</span><span class="st">`</span>, </span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">direction =</span> <span class="st">"column"</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">na_color =</span> <span class="st">"white"</span>, </span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">palette =</span> <span class="st">"Oranges"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display column-screen-inset-right">
 
-<div id="vjcczpfqbu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#vjcczpfqbu table {
+<div id="sggytzxryx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#sggytzxryx table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#vjcczpfqbu thead, #vjcczpfqbu tbody, #vjcczpfqbu tfoot, #vjcczpfqbu tr, #vjcczpfqbu td, #vjcczpfqbu th {
+#sggytzxryx thead, #sggytzxryx tbody, #sggytzxryx tfoot, #sggytzxryx tr, #sggytzxryx td, #sggytzxryx th {
   border-style: none;
 }
 
-#vjcczpfqbu p {
+#sggytzxryx p {
   margin: 0;
   padding: 0;
 }
 
-#vjcczpfqbu .gt_table {
+#sggytzxryx .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1125,12 +1134,12 @@ review tickets
   border-left-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_caption {
+#sggytzxryx .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#vjcczpfqbu .gt_title {
+#sggytzxryx .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1142,7 +1151,7 @@ review tickets
   border-bottom-width: 0;
 }
 
-#vjcczpfqbu .gt_subtitle {
+#sggytzxryx .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1154,7 +1163,7 @@ review tickets
   border-top-width: 0;
 }
 
-#vjcczpfqbu .gt_heading {
+#sggytzxryx .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1166,13 +1175,13 @@ review tickets
   border-right-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_bottom_border {
+#sggytzxryx .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_col_headings {
+#sggytzxryx .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1187,7 +1196,7 @@ review tickets
   border-right-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_col_heading {
+#sggytzxryx .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1207,7 +1216,7 @@ review tickets
   overflow-x: hidden;
 }
 
-#vjcczpfqbu .gt_column_spanner_outer {
+#sggytzxryx .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1219,15 +1228,15 @@ review tickets
   padding-right: 4px;
 }
 
-#vjcczpfqbu .gt_column_spanner_outer:first-child {
+#sggytzxryx .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#vjcczpfqbu .gt_column_spanner_outer:last-child {
+#sggytzxryx .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#vjcczpfqbu .gt_column_spanner {
+#sggytzxryx .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1239,11 +1248,11 @@ review tickets
   width: 100%;
 }
 
-#vjcczpfqbu .gt_spanner_row {
+#sggytzxryx .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#vjcczpfqbu .gt_group_heading {
+#sggytzxryx .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1269,7 +1278,7 @@ review tickets
   text-align: left;
 }
 
-#vjcczpfqbu .gt_empty_group_heading {
+#sggytzxryx .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1284,15 +1293,15 @@ review tickets
   vertical-align: middle;
 }
 
-#vjcczpfqbu .gt_from_md > :first-child {
+#sggytzxryx .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#vjcczpfqbu .gt_from_md > :last-child {
+#sggytzxryx .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#vjcczpfqbu .gt_row {
+#sggytzxryx .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1311,7 +1320,7 @@ review tickets
   overflow-x: hidden;
 }
 
-#vjcczpfqbu .gt_stub {
+#sggytzxryx .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1324,7 +1333,7 @@ review tickets
   padding-right: 5px;
 }
 
-#vjcczpfqbu .gt_stub_row_group {
+#sggytzxryx .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1338,15 +1347,15 @@ review tickets
   vertical-align: top;
 }
 
-#vjcczpfqbu .gt_row_group_first td {
+#sggytzxryx .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#vjcczpfqbu .gt_row_group_first th {
+#sggytzxryx .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#vjcczpfqbu .gt_summary_row {
+#sggytzxryx .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1356,16 +1365,16 @@ review tickets
   padding-right: 5px;
 }
 
-#vjcczpfqbu .gt_first_summary_row {
+#sggytzxryx .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_first_summary_row.thick {
+#sggytzxryx .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#vjcczpfqbu .gt_last_summary_row {
+#sggytzxryx .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1375,7 +1384,7 @@ review tickets
   border-bottom-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_grand_summary_row {
+#sggytzxryx .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1385,7 +1394,7 @@ review tickets
   padding-right: 5px;
 }
 
-#vjcczpfqbu .gt_first_grand_summary_row {
+#sggytzxryx .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1395,7 +1404,7 @@ review tickets
   border-top-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_last_grand_summary_row_top {
+#sggytzxryx .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1405,11 +1414,11 @@ review tickets
   border-bottom-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_striped {
+#sggytzxryx .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#vjcczpfqbu .gt_table_body {
+#sggytzxryx .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1418,7 +1427,7 @@ review tickets
   border-bottom-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_footnotes {
+#sggytzxryx .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1432,7 +1441,7 @@ review tickets
   border-right-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_footnote {
+#sggytzxryx .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1441,7 +1450,7 @@ review tickets
   padding-right: 5px;
 }
 
-#vjcczpfqbu .gt_sourcenotes {
+#sggytzxryx .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1455,7 +1464,7 @@ review tickets
   border-right-color: #D3D3D3;
 }
 
-#vjcczpfqbu .gt_sourcenote {
+#sggytzxryx .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1463,63 +1472,63 @@ review tickets
   padding-right: 5px;
 }
 
-#vjcczpfqbu .gt_left {
+#sggytzxryx .gt_left {
   text-align: left;
 }
 
-#vjcczpfqbu .gt_center {
+#sggytzxryx .gt_center {
   text-align: center;
 }
 
-#vjcczpfqbu .gt_right {
+#sggytzxryx .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#vjcczpfqbu .gt_font_normal {
+#sggytzxryx .gt_font_normal {
   font-weight: normal;
 }
 
-#vjcczpfqbu .gt_font_bold {
+#sggytzxryx .gt_font_bold {
   font-weight: bold;
 }
 
-#vjcczpfqbu .gt_font_italic {
+#sggytzxryx .gt_font_italic {
   font-style: italic;
 }
 
-#vjcczpfqbu .gt_super {
+#sggytzxryx .gt_super {
   font-size: 65%;
 }
 
-#vjcczpfqbu .gt_footnote_marks {
+#sggytzxryx .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#vjcczpfqbu .gt_asterisk {
+#sggytzxryx .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#vjcczpfqbu .gt_indent_1 {
+#sggytzxryx .gt_indent_1 {
   text-indent: 5px;
 }
 
-#vjcczpfqbu .gt_indent_2 {
+#sggytzxryx .gt_indent_2 {
   text-indent: 10px;
 }
 
-#vjcczpfqbu .gt_indent_3 {
+#sggytzxryx .gt_indent_3 {
   text-indent: 15px;
 }
 
-#vjcczpfqbu .gt_indent_4 {
+#sggytzxryx .gt_indent_4 {
   text-indent: 20px;
 }
 
-#vjcczpfqbu .gt_indent_5 {
+#sggytzxryx .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1754,11 +1763,11 @@ review tickets
 <div class="cell page-columns page-full">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://www.ardata.fr/en/flextable-gallery/2021-03-29-gradient-colored-table/</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co"># prep data'</span></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># https://www.ardata.fr/en/flextable-gallery/2021-03-29-gradient-colored-table/</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="co"># prep data'</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <pre><code>
 Attaching package: 'kableExtra'</code></pre>
@@ -1767,19 +1776,19 @@ Attaching package: 'kableExtra'</code></pre>
     group_rows</code></pre>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>ktab <span class="ot">&lt;-</span> main_dat <span class="sc">%&gt;%</span> </span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(item, exp_hours, role) <span class="sc">%&gt;%</span> </span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> role, </span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values_from =</span> exp_hours) <span class="sc">%&gt;%</span> </span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">'html'</span>)</span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>ktab <span class="sc">%&gt;%</span> </span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_paper</span>(<span class="st">"striped"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">angle =</span> <span class="sc">-</span><span class="dv">90</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">align =</span> <span class="st">"r"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>ktab <span class="ot">&lt;-</span> main_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(item, exp_hours, role) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_wider</span>(<span class="at">names_from =</span> role, </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">values_from =</span> exp_hours) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable</span>(<span class="at">format =</span> <span class="st">'html'</span>)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>ktab <span class="sc">%&gt;%</span> </span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_paper</span>(<span class="st">"striped"</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">angle =</span> <span class="sc">-</span><span class="dv">90</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">0</span>, <span class="at">align =</span> <span class="st">"r"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display column-screen-inset-right">
 

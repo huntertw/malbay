@@ -10,6 +10,7 @@ format:
     toc-title: Contents
     css: styles.css
     code-fold: true
+    output-file: 'index'
 ---
 
 ## Introduction
