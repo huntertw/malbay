@@ -15,10 +15,16 @@ format:
 
 ## Introduction
 
-Some words about what this report will show. 
+This report provides a summary view of data related to workers, tasks, and hours.
+
+## Setup
+
+### Environment
+
 
 
 ```{r setup}
+#| message: false
 here::i_am("final_report.qmd")
 library(here)
 library(ggplot2)
@@ -28,6 +34,8 @@ library(ztable)
 cfg <- config::get()
 
 ggplot2::theme_set(theme_bw())
+
+mbcol <- "#1D5F97"
 
 # TODO
 # - add color pallette that aligns to malbay
@@ -41,10 +49,6 @@ ggplot2::theme_set(theme_bw())
 # - After I get feedback on each view, start adding in data validation checks
 # Can I adjust the scroll to scroll and not jump
 
-# Next Steps
-# Get it on a GitHub page
-# Get rid of unnecessary text...
-# Change the base color to not be black or grey...make it pop
 
 
 
@@ -53,38 +57,52 @@ ggplot2::theme_set(theme_bw())
 
 ```
 
-## Data
-
 ### Reading in Data
 
-Hours by work item and role
+The first data set is organized by item and role. 
+It includes information about each of these combinations and a quick summary is 
+provided below.
 
 ```{r}
 
-main_dat <- readr::read_csv(here(cfg$datapath, cfg$main))
+main_dat <- readr::read_csv(here(cfg$datapath, cfg$main), 
+                            show_col_types = FALSE)
 
 glimpse(main_dat)
 
 ```
 
-
-Work items and expected hours
+The second data set organizes cases by work items. 
+It is meant to represent the full list of work items and the expected number 
+of hours that will be required to complete each.
+This data will be compared to the first data set throughout.
+An example of the output is printed below.
 
 ```{r}
 
-workitems_dat <- readr::read_csv(here(cfg$datapath, cfg$workitems))
+workitems_dat <- readr::read_csv(here(cfg$datapath, cfg$workitems),
+                                 show_col_types = FALSE)
 
 glimpse(workitems_dat)
 
 ```
 
+Although not included, there is probably at least one more data set.
 
+1. A list of workers and relevant information on each
 
+TODO: Create example list of workers
 
+## Preparing Data
+
+This section outlines some data validation checks and a series of adjustments 
+that are made to the input data based on global parameters. 
 
 ### Validating Data
 
-Output from confirming data
+TODO: Work on this section as we confirm what the inputs will look like.
+
+Output from confirming data (probably a table)
 
 - Number rows
 - Total hours
@@ -107,12 +125,25 @@ Other ideas?
 
 ### Adjusting Data
 
-This section could include applying global parameters that aren't already built
-in to the provided data set.
+This section will outline any adjustments applied to the input data along with
+a summary of any global parameters. 
 
-## Hours by work item
+Some of the potential ideas for this section includes:
 
-The first section reviews the number of hours by work item.
+- Overall timeline
+- Standard work day/week/year
+- Percent of worker's time that should be reserved for admin activities
+- Total hours available after accounting for admin activities through the timeline
+- Full list of workers/roles included in exercise
+- Current quality level vs. optimal quality level
+
+TODO: Provide example of an adjustable parameter based on discussion with team
+
+## Views
+
+### Hours by work item
+
+The first view provides the hours by work item. 
 
 ```{r}
 
@@ -120,7 +151,7 @@ The first section reviews the number of hours by work item.
 hours_by_item <- main_dat %>% 
   group_by(item) %>% 
   summarize(hours = sum(exp_hours)) %>% 
-  full_join(workitems_dat) %>% 
+  full_join(workitems_dat, by = join_by(item)) %>% 
   mutate(item = forcats::fct_infreq(item, w = hours_required)) %>% 
   tidyr::replace_na(list(hours = 0))
 
@@ -131,21 +162,47 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 # Create graph
 hours_by_item %>% 
   ggplot(aes(y = forcats::fct_rev(item))) +
-  geom_col(aes(x = hours)) +
+  geom_col(aes(x = hours),
+           fill = mbcol) +
   geom_point(aes(x = hours_required)) +
   labs(title = "Hours by work item",
        y = "Work item", 
        x = paste0("Hours per ", xlab))
 
+part1 <- hours_by_item %>% 
+  mutate(over_under_pct = hours / hours_required-1) %>% 
+  select(item, hours) %>% 
+  ggplot(aes(y = forcats::fct_rev(item))) +
+  geom_col(aes(x = hours),
+           fill = mbcol) +
+  labs(title = "Hours by work item",
+     y = "Work item", 
+     x = paste0("Hours per ", xlab))
+
+  
+part2 <- hours_by_item %>% 
+  mutate(over_under_pct = hours / hours_required-1) %>% 
+  select(item, over_under_pct) %>% 
+  ggplot(aes(y = forcats::fct_rev(item))) +
+  geom_col(aes(x = over_under_pct),
+           fill = mbcol) +
+  scale_x_continuous(labels = scales::percent, limits = c(-1, 1),
+                     breaks = c(-.75, 0, .75)) +
+  labs(title = "% over/under",
+     y = NULL, 
+     x = "%")+
+  theme(axis.text.y = element_blank())
+  
+library(patchwork)
+
+part1 + part2 + plot_layout(widths = c(3, 1))
+
 ```
 
 
-## Hours by individual and work item
+### Hours by individual and work item
 
 This section shows the expect time for each task grouped by individuals or roles.
-
-Outset content...
-
 
 ```{r}
 #| fig-width: 13.5
@@ -168,7 +225,8 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 # Create graph
 hours_by_item_role %>% 
   ggplot() +
-  geom_col(aes(x = hours, y = forcats::fct_rev(item)), position = "dodge") +
+  geom_col(aes(x = hours, y = forcats::fct_rev(item)), 
+           position = "dodge", fill = mbcol) +
   facet_wrap(.~role, scale = "free_y", nrow = 3) +
   labs(title = "Hours by work item",
        y = "Work item", 
@@ -178,42 +236,31 @@ hours_by_item_role %>%
 
 ```
 
+### Gantt Chart
 
-
-- Work items + individual or role on rows
-- Bars that represent hours in each combo
-
-
-## Gantt Chart
+This view provides the time expected on each task throughout the time period.
 
 ```{r}
 #| fig-width: 14.6
 #| fig-height: 7
-#| column: screen-inset-right
-#| 
+#| column: screen-inset-right 
 main_dat %>% 
   # filter(role == "manager") %>% 
   ggplot(aes(x=lubridate::ymd(start_dt), xend=lubridate::ymd(end_dt), y=item, yend=item)) +
   # theme_bw()+ #use ggplot theme with black gridlines and white background
-  geom_segment(linewidth=3) + #increase line width of segments in the chart
+  geom_segment(linewidth=3,
+               color = mbcol) + #increase line width of segments in the chart
   facet_wrap(.~role, scales = "free_y") +
   labs(title='Schedule', x='Time', y='Work Item')
 
 ```
 
+### Heatmap
 
-- Individuals or roles on grouped rows
-- Show by month or year or something
-- Each bar represents a task
-- Maybe it is a graph for each person? Will need to figure this out.
+Finally, this view highlights where time is being spent by the team and 
+where there are potential gaps.
 
-## Heatmap
-
-- work item details on rows
-- individuals or roles on columns
-- heatmap of proportion of time or total time or whatever
-
-### Prep data
+#### Prep data
 
 ```{r}
 
@@ -226,9 +273,11 @@ hm_dat <- main_dat %>%
 ```
 
 
-### ztable
+#### ztable--Version 1
 
-Version 1
+I think this is the best looking version, 
+but I haven't come up with a solution for the column headers.
+At the moment, I'm thinking of simply numbering the columns and providing a key.
 
 ```{r}
 #| output: 'asis'
@@ -244,9 +293,9 @@ hm_dat %>%
 
 ```
 
-### gt
+#### gt--Version 2
 
-Version 2
+This one isn't bad, but the "NA"s are distracting. Same issue with column header.
 
 ```{r}
 #| output: 'asis'
@@ -264,9 +313,10 @@ hm_dat %>%
              palette = "Oranges")
 ```
 
-### flextable
+#### flextable--Version 3
 
-Version 3: TODO
+This one has an option to angle the column headers, 
+but it obviously isn't working as expected...
 
 ```{r}
 #| output: 'asis'
@@ -291,6 +341,8 @@ ktab %>%
   row_spec(0, align = "r")
   
 ```
+
+
 
 
 ## Other ideas
