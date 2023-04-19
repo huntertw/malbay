@@ -52,7 +52,7 @@ mbcol <- "#1D5F97"
 
 
 
-
+# Random info: if prompted for gf pat, use credentials::set_github_pat()
 
 
 ```

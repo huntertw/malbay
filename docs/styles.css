@@ -1,0 +1,15 @@
+.output {
+  color: green;
+  background-color: black;
+}
+
+.quarto-title-block .quarto-title-banner {
+  background-image: url(malbay.png);
+  background-size: 150px;
+  background-position: right;
+  background-repeat: no-repeat;
+  padding-right: 5px;
+  padding-top: 20px;
+  padding-bottom: 15px;
+  background-origin: content-box;
+}
