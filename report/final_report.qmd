@@ -29,7 +29,9 @@ here::i_am("final_report.qmd")
 library(here)
 library(ggplot2)
 library(dplyr)
-library(ztable)
+library(reactable)
+library(reactablefmtr)
+library(tippy)
 
 cfg <- config::get()
 
@@ -260,89 +262,59 @@ main_dat %>%
 Finally, this view highlights where time is being spent by the team and 
 where there are potential gaps.
 
-#### Prep data
-
 ```{r}
+#| column: screen-inset-right
 
+# https://glin.github.io/reactable/articles/examples.html#basic-usage
+
+# TODO: 
+# Add some data that takes into account higher level work tasks / skills
 hm_dat <- main_dat %>% 
   select(item, exp_hours, role) %>% 
   tidyr::pivot_wider(names_from = role, 
                      values_from = exp_hours) %>% 
   as.data.frame()
+ 
 
+with_tooltip <- function(value, tooltip, ...) {
+  htmltools::div(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
+      tippy(value, tooltip, ...))
+}
+
+
+reactable(hm_dat, 
+          resizable = TRUE,
+          pagination = FALSE,
+          bordered = TRUE,
+          wrap = FALSE,
+                    # width = 2000,
+          # style = list(maxWidth = 3000),
+          defaultColDef = colDef(footer = function(values) sum(values, na.rm = T),
+                                 footerStyle = list(fontWeight = "bold"),
+                                 minWidth = 100,
+                                 style = color_scales(hm_dat, 
+                                                      colors = RColorBrewer::brewer.pal(5, "Oranges"))),
+          columns = list(
+            item = colDef(minWidth = 200, filterable = TRUE, 
+                         sticky = "left", footer = "Total"),
+            # There must be a better way to do this...
+            # cat(paste0("`", names(hm_dat), 
+            #            "` = colDef(header = with_tooltip('",names(hm_dat),
+            #            "','",names(hm_dat),"'))"), 
+            #     sep = ",\n")
+            # Maybe pass in a function to finish creating this table...?
+            `manager` = colDef(header = with_tooltip('manager','manager')),
+            `shift supervisor 1` = colDef(header = with_tooltip('shift supervisor 1','shift supervisor 1')),
+            `shift supervisor 2` = colDef(header = with_tooltip('shift supervisor 2','shift supervisor 2')),
+            `theater ops specialist sr 1` = colDef(header = with_tooltip('theater ops specialist sr 1','theater ops specialist sr 1')),
+            `theater ops specialist sr 2` = colDef(header = with_tooltip('theater ops specialist sr 2','theater ops specialist sr 2')),
+            `theater ops specialist sr 3` = colDef(header = with_tooltip('theater ops specialist sr 3','theater ops specialist sr 3')),
+            `theater ops specialist 1` = colDef(header = with_tooltip('theater ops specialist 1','theater ops specialist 1')),
+            `theater ops specialist 2` = colDef(header = with_tooltip('theater ops specialist 2','theater ops specialist 2')),
+            `theater ops specialist 3` = colDef(header = with_tooltip('theater ops specialist 3','theater ops specialist 3'))
+            )
+          )
 ```
-
-
-#### ztable--Version 1
-
-I think this is the best looking version, 
-but I haven't come up with a solution for the column headers.
-At the moment, I'm thinking of simply numbering the columns and providing a key.
-
-```{r}
-#| output: 'asis'
-#| column: screen-inset-right
-# https://cran.r-project.org/web/packages/ztable/vignettes/heatmapTable.html
-options(ztable.type = "html")
-
-# create view
-hm_dat %>% 
-  ztable(rotate = TRUE, turn=TRUE, angle = 90) %>% 
-  makeHeatmap(margin = 2) %>% 
-  print(caption = 'How does this look?')
-
-```
-
-#### gt--Version 2
-
-This one isn't bad, but the "NA"s are distracting. Same issue with column header.
-
-```{r}
-#| output: 'asis'
-#| column: screen-inset-right
-# https://stackoverflow.com/questions/65327289/
-# how-to-represent-a-datatable-in-r-as-a-heatmap
-
-# prep data
-library(gt)
-hm_dat %>% 
-  gt() %>% 
-  data_color(columns = manager:`theater ops specialist 3`, 
-             direction = "column",
-             na_color = "white", 
-             palette = "Oranges")
-```
-
-#### flextable--Version 3
-
-This one has an option to angle the column headers, 
-but it obviously isn't working as expected...
-
-```{r}
-#| output: 'asis'
-#| column: screen-inset-right
-# https://www.ardata.fr/en/flextable-gallery/2021-03-29-gradient-colored-table/
-
-# prep data'
-library(knitr)
-library(kableExtra)
-ktab <- main_dat %>% 
-  select(item, exp_hours, role) %>% 
-  tidyr::pivot_wider(names_from = role, 
-                     values_from = exp_hours) %>% 
-  as.data.frame() %>% 
-  kable(format = 'html')
-
-
-
-ktab %>% 
-  kable_paper("striped", full_width = F) %>%
-  row_spec(0, angle = -90) %>% 
-  row_spec(0, align = "r")
-  
-```
-
-
 
 
 ## Other ideas
@@ -352,3 +324,16 @@ ktab %>%
 ## Questions that need to be answered in report
 - How many people would it take to do 100% of the required work?
 - How do things change as the quality of work changes (increases or decreases)?
+
+
+# Notes from discussion on 4/21/2023
+- Want another column in to categorize
+  - Skill sets within the Work Item table
+  - Jerry asked about whether this is useful for aggregation or filtering?
+-The ability to filter in column will be a benefit
+- 
+
+### Next Steps
+- I will focus hard on the heatmap and finalizing the view
+
+
