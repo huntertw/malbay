@@ -178,7 +178,8 @@ part1 <- hours_by_item %>%
   geom_col(aes(x = hours, fill = skill)) +
   labs(title = "Hours by work item",
      y = "Work item", 
-     x = paste0("Hours per ", xlab))
+     x = paste0("Hours per ", xlab)) + 
+  scale_fill_brewer(palette = "Set2")
 
   
 part2 <- hours_by_item %>% 
@@ -191,7 +192,8 @@ part2 <- hours_by_item %>%
   labs(title = "% over/under",
      y = NULL, 
      x = "%")+
-  theme(axis.text.y = element_blank())
+  theme(axis.text.y = element_blank()) + 
+  scale_fill_brewer(palette = "Set2")
   
 library(patchwork)
 
@@ -234,7 +236,8 @@ hours_by_item_role %>%
   labs(title = "Hours by work item",
        y = "Work item", 
        x = paste0("Hours per ", xlab)) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "bottom") + 
+  scale_fill_brewer(palette = "Set2")
 
 
 
