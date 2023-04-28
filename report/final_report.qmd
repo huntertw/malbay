@@ -161,22 +161,21 @@ xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
   
   
-# Create graph
-hours_by_item %>% 
-  ggplot(aes(y = forcats::fct_rev(item))) +
-  geom_col(aes(x = hours),
-           fill = mbcol) +
-  geom_point(aes(x = hours_required)) +
-  labs(title = "Hours by work item",
-       y = "Work item", 
-       x = paste0("Hours per ", xlab))
+# # Create graph
+# hours_by_item %>% 
+#   ggplot(aes(y = forcats::fct_rev(item))) +
+#   geom_col(aes(x = hours),
+#            fill = mbcol) +
+#   geom_point(aes(x = hours_required)) +
+#   labs(title = "Hours by work item",
+#        y = "Work item", 
+#        x = paste0("Hours per ", xlab))
 
 part1 <- hours_by_item %>% 
   mutate(over_under_pct = hours / hours_required-1) %>% 
-  select(item, hours) %>% 
+  select(item, hours, skill) %>% 
   ggplot(aes(y = forcats::fct_rev(item))) +
-  geom_col(aes(x = hours),
-           fill = mbcol) +
+  geom_col(aes(x = hours, fill = skill)) +
   labs(title = "Hours by work item",
      y = "Work item", 
      x = paste0("Hours per ", xlab))
@@ -184,10 +183,9 @@ part1 <- hours_by_item %>%
   
 part2 <- hours_by_item %>% 
   mutate(over_under_pct = hours / hours_required-1) %>% 
-  select(item, over_under_pct) %>% 
+  select(item, over_under_pct, skill) %>% 
   ggplot(aes(y = forcats::fct_rev(item))) +
-  geom_col(aes(x = over_under_pct),
-           fill = mbcol) +
+  geom_col(aes(x = over_under_pct, fill = skill)) +
   scale_x_continuous(labels = scales::percent, limits = c(-1, 1),
                      breaks = c(-.75, 0, .75)) +
   labs(title = "% over/under",
@@ -197,7 +195,8 @@ part2 <- hours_by_item %>%
   
 library(patchwork)
 
-part1 + part2 + plot_layout(widths = c(3, 1))
+part1 + part2 + plot_layout(widths = c(3, 1), guides = "collect") &
+  theme(legend.position='bottom')
 
 ```
 
@@ -214,8 +213,10 @@ This section shows the expect time for each task grouped by individuals or roles
 
 # prepare data
 hours_by_item_role <- main_dat %>%
-  group_by(item, role) %>%
-  summarize(hours = sum(exp_hours), .groups = "drop") %>%  
+  full_join(workitems_dat %>% select(item, skill), by = join_by(item)) %>% 
+  filter(!is.na(exp_hours)) %>% 
+  group_by(item, role, skill) %>%
+  summarize(hours = sum(exp_hours), .groups = "drop") %>% 
   # full_join(workitems_dat) %>%
   mutate(item = forcats::fct_infreq(item, w = hours)) #%>%
   # tidyr::replace_na(list(hours = 0))
@@ -227,12 +228,13 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 # Create graph
 hours_by_item_role %>% 
   ggplot() +
-  geom_col(aes(x = hours, y = forcats::fct_rev(item)), 
-           position = "dodge", fill = mbcol) +
+  geom_col(aes(x = hours, y = forcats::fct_rev(item), fill = skill), 
+           position = "dodge") +
   facet_wrap(.~role, scale = "free_y", nrow = 3) +
   labs(title = "Hours by work item",
        y = "Work item", 
-       x = paste0("Hours per ", xlab))
+       x = paste0("Hours per ", xlab)) +
+  theme(legend.position = "bottom")
 
 
 

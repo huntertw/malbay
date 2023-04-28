@@ -1,22 +1,22 @@
-item,hours_required 
-backup customer trans,4
-backup projection,4
-build movie,1.5
-change ads,1.5
-customer trans: concessions,54
-customer trans: tickets,25.5
-load popcorn machine,6
-load soda syrup,6
-payroll,2
-prepare movie schedule,26
-prepare worker schedule,2
-review budget,4
-review schedules,2
-review tickets,12
-special project 1,10
-special project 2,10
-special project 3,10
-special project 4,10
-supervise customer trans,79.5
-thread projector,1.5
-tour theater,10
+item,hours_required,skill
+backup customer trans,4,customer ops
+backup projection,4,movie ops
+build movie,1.5,movie ops
+change ads,1.5,movie ops
+concessions,54,customer ops
+tickets,25.5,customer ops
+load popcorn machine,6,food ops
+load soda syrup,6,food ops
+payroll,2,admin
+prepare movie schedule,26,admin
+prepare worker schedule,2,admin
+review budget,4,admin
+review schedules,2,admin
+review tickets,12,customer ops
+special project 1,10,project
+special project 2,10,project
+special project 3,10,project
+special project 4,10,project
+supervise customer trans,79.5,customer ops
+thread projector,1.5,movie ops
+tour theater,10,customer ops
