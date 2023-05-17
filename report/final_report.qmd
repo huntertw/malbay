@@ -44,6 +44,7 @@ cfg <- config::get()
 ggplot2::theme_set(theme_bw())
 
 mbcol <- "#1D5F97"
+my_pallette <- pals::kelly()[-1]
 
 # TODO
 # - add color pallette that aligns to malbay
@@ -180,20 +181,19 @@ a summary of any global parameters.
 A quick review of this data suggests a handful of adjustments. 
 They include:
 
-1. Drop items noted as "inaccurate".
-2. Adjust to hours
-3. Add period column to represent period
+1. Adjust to hours
+1. Add period column to represent period
 
 Once these adjustments are made, re-create the other two data sets.
 
 ```{r}
 
 main_dat <-   main_dat %>% 
-  filter(!stringr::str_detect(Task, 
-                             stringr::regex("inaccurate", ignore_case = TRUE))) %>% 
   mutate(Total.Hours = round(Total.Mins.Max / 60, 2),
          period = "week")
 
+
+# Do I need this?
 workitems_dat <- main_dat %>% 
   select(Task, Total.Hours, Department.Alignment) %>% 
   group_by(Task, Department.Alignment) %>% 
@@ -230,9 +230,40 @@ Some of the other generic ideas for this section includes:
 
 ## Views
 
-### Hours by work item
+### Hours by Department Alignment
 
-The first view provides the hours by work item. 
+This first summary view provides the sum of hours by department alignment.
+
+```{r}
+# prepare data
+hours_by_department <- main_dat %>% 
+  group_by(Department.Alignment) %>% 
+  summarize(Hours = sum(Total.Hours)) %>% 
+  mutate(Department.Alignment = forcats::fct_infreq(Department.Alignment, w = Hours))
+
+xlab <- unique(main_dat$period)
+stopifnot("period must be on the same time frame" = length(xlab) == 1)
+
+hours_by_department %>% 
+  ggplot(aes(y = forcats::fct_rev(Department.Alignment))) +
+  geom_col(aes(x = Hours, fill = Department.Alignment)) +
+  labs(title = "Hours by task",
+     y = "Task", 
+     x = paste0("Hours per ", xlab)) + 
+  scale_fill_manual(values = my_pallette) 
+  # scale_fill_brewer(palette = "Set3")
+
+
+```
+
+This second version provides a summary adjusted by the number of roles associated with each department.
+
+
+
+
+### Hours by Task
+
+The view provides the hours by task.
 
 ```{r}
 
@@ -292,7 +323,7 @@ part1 + part2 + plot_layout(widths = c(3, 1), guides = "collect") &
 ```
 
 
-### Hours by individual and work item
+### Hours by Position and Task
 
 This section shows the expect time for each task grouped by individuals or roles.
 
@@ -329,27 +360,6 @@ hours_by_item_role %>%
   scale_fill_manual(values = pals::kelly())
 
 
-
-```
-
-### Gantt Chart
-
-This view provides the time expected on each task throughout the time period.
-
-This is not relevant for these data.
-
-```{r}
-#| fig-width: 14.6
-#| fig-height: 7
-#| column: screen-inset-right
-# main_dat %>%
-#   # filter(role == "manager") %>%
-#   ggplot(aes(x=lubridate::ymd(start_dt), xend=lubridate::ymd(end_dt), y=item, yend=item)) +
-#   # theme_bw()+ #use ggplot theme with black gridlines and white background
-#   geom_segment(linewidth=3,
-#                color = mbcol) + #increase line width of segments in the chart
-#   facet_wrap(.~role, scales = "free_y") +
-#   labs(title='Schedule', x='Time', y='Work Item')
 
 ```
 
@@ -422,7 +432,7 @@ reactable(hm_dat,
 - How do things change as the quality of work changes (increases or decreases)?
 
 
-# Notes from discussion on 4/21/2023
+# Notes from discussion on 04/21/2023
 - Want another column in to categorize
   - Skill sets within the Work Item table
   - Jerry asked about whether this is useful for aggregation or filtering?
