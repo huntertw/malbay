@@ -13,6 +13,11 @@ format:
     output-file: 'index'
 ---
 
+## Incorporating real data
+
+- Graphs should just be long. Greg is going to adjust names to help with the length of labels.
+- Adjust views to sum at worker and department level
+
 ## Introduction
 
 This report provides a summary view of data related to workers, tasks, and hours.
