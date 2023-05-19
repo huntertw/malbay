@@ -230,7 +230,7 @@ OTHER IDEAS TO DISCUSS WITH TEAM:
 This first summary view provides the sum of hours by department alignment.
 The right side also provides a count of unique roles contributing to the department efforts.
 
-```{r}
+```{r deptmnt}
 # prepare data
 hours_by_department <- main_dat %>% 
   group_by(Department.Alignment) %>% 
@@ -304,7 +304,7 @@ hours_by_department %>%
 
 The view provides the hours by task and department.
 
-```{r}
+```{r tskDeptmnt}
 #| fig-width: 8.5
 #| fig-height: 12
 #| column: screen-inset-right
@@ -352,7 +352,7 @@ hours_by_item %>%
 
 The view provides the hours by task and department.
 
-```{r}
+```{r tskPosDept}
 #| fig-width: 10
 #| fig-height: 13
 #| column: screen-inset-right
@@ -396,7 +396,7 @@ hours_by_item_role %>%
 Finally, this view highlights where time is being spent by the team and 
 where there are potential gaps.
 
-```{r}
+```{r hm}
 #| column: screen-inset-right
 
 # https://glin.github.io/reactable/articles/examples.html#basic-usage
