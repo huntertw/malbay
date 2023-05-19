@@ -71,7 +71,7 @@ my_pallette <- pals::kelly()[-1]
 There is only a single data set used for this report.
 It is organized by Task and Position. 
 It provides information about each of these combinations and a quick summary is 
-provided below.
+provided below. 
 
 ```{r data}
 
