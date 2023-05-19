@@ -65,7 +65,7 @@ my_pallette <- pals::kelly()[-1]
 # gitcreds::gitcreds_set() # try just this... does it still ask?
 # credentials::set_github_pat()
 
-
+cat(my_pallette)
 ```
 
 ### Reading in Data
@@ -81,7 +81,8 @@ provided below.
 
 
 main_dat <- readxl::read_xlsx(here(cfg$datapath, cfg$client_main)) %>% 
-  setNames(make.names(names(main_dat)))
+  setNames(make.names(names(.)))
+
 glimpse(main_dat)
 ```
 
@@ -261,6 +262,30 @@ hours_by_department %>%
 This second version provides a summary adjusted by the number of roles associated with each department.
 
 
+```{r}
+# prepare data
+hours_by_department <- main_dat %>% 
+  group_by(Department.Alignment) %>% 
+  summarize(Hours = sum(Total.Hours),
+            num_pos = length(unique(Current.Position)),
+            hours_per_position = Hours / num_pos) %>% 
+  mutate(Department.Alignment = forcats::fct_infreq(Department.Alignment, w = Hours))
+
+xlab <- unique(main_dat$period)
+stopifnot("period must be on the same time frame" = length(xlab) == 1)
+
+hours_by_department %>% 
+  ggplot(aes(y = forcats::fct_rev(Department.Alignment))) +
+  geom_col(aes(x = hours_per_position, fill = Department.Alignment)) +
+  labs(title = "Hours by task divided by number unique roles",
+     y = "Task", 
+     x = paste0("Average hours per ", xlab)) + 
+  scale_fill_manual(values = my_pallette) 
+  # scale_fill_brewer(palette = "Set3")
+
+
+```
+
 
 
 ### Hours by Task
@@ -268,14 +293,15 @@ This second version provides a summary adjusted by the number of roles associate
 The view provides the hours by task.
 
 ```{r}
+#| fig-width: 7
+#| fig-height: 10
 
 # prepare data
 hours_by_item <- main_dat %>% 
-  group_by(Task) %>% 
-  summarize(Hours = sum(Total.Hours)) %>% 
-  full_join(workitems_dat, by = join_by(Task)) %>% 
-  mutate(Task = forcats::fct_infreq(Task, w = Hours.Required)) %>% 
-  tidyr::replace_na(list(hours = 0))
+  group_by(Task, Department.Alignment) %>% 
+  summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
+  arrange(desc(Hours)) %>% 
+  mutate(Task = forcats::fct_inorder(Task)) 
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
@@ -291,36 +317,22 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 #        y = "Work item", 
 #        x = paste0("Hours per ", xlab))
 
-part1 <- hours_by_item %>% 
-  mutate(over_under_pct = Hours / Hours.Required-1) %>% 
-  select(Task, Hours, Department.Alignment) %>% 
+hours_by_item %>%
+  # mutate(over_under_pct = Hours / Hours.Required-1) %>%
+  # select(Task, Hours, Department.Alignment) %>%
   ggplot(aes(y = forcats::fct_rev(Task))) +
   geom_col(aes(x = Hours, fill = Department.Alignment)) +
   labs(title = "Hours by task",
-     y = "Task", 
-     x = paste0("Hours per ", xlab)) + 
-  scale_fill_manual(values = pals::kelly()) 
+     y = "Task",
+     x = paste0("Hours per ", xlab)) +
+  scale_fill_manual(values = my_pallette)
   # scale_fill_brewer(palette = "Set3")
 
   
-part2 <- hours_by_item %>% 
-  mutate(over_under_pct = Hours / Hours.Required-1) %>% 
-  select(Task, over_under_pct, Department.Alignment) %>% 
-  ggplot(aes(y = forcats::fct_rev(Task))) +
-  geom_col(aes(x = over_under_pct, fill = Department.Alignment)) +
-  scale_x_continuous(labels = scales::percent, limits = c(-1, 1),
-                     breaks = c(-.75, 0, .75)) +
-  labs(title = "% over/under",
-     y = NULL, 
-     x = "%")+
-  theme(axis.text.y = element_blank()) + 
-  scale_fill_manual(values = pals::kelly())
-  # scale_fill_brewer(palette = "Set3")
-  
-library(patchwork)
-
-part1 + part2 + plot_layout(widths = c(3, 1), guides = "collect") &
-  theme(legend.position='bottom')
+# library(patchwork)
+# 
+# part1 + part2 + plot_layout(widths = c(3, 1), guides = "collect") &
+#   theme(legend.position='bottom')
 
 ```
 
@@ -331,19 +343,19 @@ This section shows the expect time for each task grouped by individuals or roles
 
 ```{r}
 #| fig-width: 13.5
-#| fig-height: 6.6
+#| fig-height: 20
 #| column: screen-inset-right
 
 
 # prepare data
 hours_by_item_role <- main_dat %>%
-  full_join(workitems_dat %>% select(Task, Hours.Required), by = join_by(Task)) %>% 
-  filter(!is.na(Total.Hours)) %>% 
+  # full_join(workitems_dat %>% select(Task, Hours.Required), by = join_by(Task)) %>% 
+  # filter(!is.na(Total.Hours)) %>% 
   group_by(Task, Current.Position, Department.Alignment) %>%
-  summarize(hours = sum(Total.Hours), .groups = "drop") %>% 
+  summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
   # full_join(workitems_dat) %>%
-  mutate(item = forcats::fct_infreq(Task, w = hours)) #%>%
-  # tidyr::replace_na(list(hours = 0))
+  arrange(desc(Hours)) %>% 
+  mutate(item = forcats::fct_inorder(Task)) 
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
@@ -352,14 +364,16 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 # Create graph
 hours_by_item_role %>% 
   ggplot() +
-  geom_col(aes(x = hours, y = forcats::fct_rev(Task), fill = Department.Alignment), 
+  geom_col(aes(x = Hours, y = Task, fill = Department.Alignment), 
            position = "dodge") +
-  facet_wrap(.~Current.Position, scale = "free_y", nrow = 3) +
-  labs(title = "Hours by work item",
-       y = "Work item", 
+  facet_grid(rows = vars(Current.Position), space = "free", scale = "free_y",
+             labeller = label_wrap_gen(width = 12, multi_line = TRUE)) +
+  labs(title = "Hours by Position and Task",
+       y = "Task", 
        x = paste0("Hours per ", xlab)) +
-  theme(legend.position = "bottom") + 
-  scale_fill_manual(values = pals::kelly())
+  theme(legend.position = "right",
+        strip.text.y.right = element_text(angle=0)) +
+  scale_fill_manual(values = my_pallette)
 
 
 
@@ -378,17 +392,23 @@ where there are potential gaps.
 # TODO: 
 # Add some data that takes into account higher level work tasks / skills
 hm_dat <- main_dat %>% 
-  select(item, exp_hours, role) %>% 
-  tidyr::pivot_wider(names_from = role, 
-                     values_from = exp_hours) %>% 
+  # filter(Current.Position == "Senior Accountant") %>% 
+  select(Task, Total.Hours, Current.Position) %>% 
+  group_by(Task, Current.Position) %>% 
+  summarize(Total.Hours = sum(Total.Hours)) %>% 
+  tidyr::pivot_wider(names_from = Current.Position, 
+                     values_from = Total.Hours) %>% 
   as.data.frame()
+
+hm_dat$`General Counsel`[1] <-  0 # need at least two items with a number
+
  
 
-with_tooltip <- function(value, tooltip, ...) {
-  htmltools::div(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
-      tippy(value, tooltip, ...))
-}
-
+# with_tooltip <- function(value, tooltip, ...) {
+#   htmltools::div(style = "text-decoration: underline; text-decoration-style: dotted; cursor: help",
+#       tippy(value, tooltip, ...))
+# }
+library(htmltools)
 
 reactable(hm_dat, 
           resizable = TRUE,
@@ -403,23 +423,23 @@ reactable(hm_dat,
                                  style = color_scales(hm_dat, 
                                                       colors = RColorBrewer::brewer.pal(5, "Oranges"))),
           columns = list(
-            item = colDef(minWidth = 200, filterable = TRUE, 
-                         sticky = "left", footer = "Total"),
+            Task = colDef(minWidth = 200, filterable = TRUE, 
+                         sticky = "left", footer = "Total")#,
             # There must be a better way to do this...
             # cat(paste0("`", names(hm_dat), 
             #            "` = colDef(header = with_tooltip('",names(hm_dat),
             #            "','",names(hm_dat),"'))"), 
             #     sep = ",\n")
             # Maybe pass in a function to finish creating this table...?
-            `manager` = colDef(header = with_tooltip('manager','manager')),
-            `shift supervisor 1` = colDef(header = with_tooltip('shift supervisor 1','shift supervisor 1')),
-            `shift supervisor 2` = colDef(header = with_tooltip('shift supervisor 2','shift supervisor 2')),
-            `theater ops specialist sr 1` = colDef(header = with_tooltip('theater ops specialist sr 1','theater ops specialist sr 1')),
-            `theater ops specialist sr 2` = colDef(header = with_tooltip('theater ops specialist sr 2','theater ops specialist sr 2')),
-            `theater ops specialist sr 3` = colDef(header = with_tooltip('theater ops specialist sr 3','theater ops specialist sr 3')),
-            `theater ops specialist 1` = colDef(header = with_tooltip('theater ops specialist 1','theater ops specialist 1')),
-            `theater ops specialist 2` = colDef(header = with_tooltip('theater ops specialist 2','theater ops specialist 2')),
-            `theater ops specialist 3` = colDef(header = with_tooltip('theater ops specialist 3','theater ops specialist 3'))
+            # `manager` = colDef(header = with_tooltip('manager','manager')),
+            # `shift supervisor 1` = colDef(header = with_tooltip('shift supervisor 1','shift supervisor 1')),
+            # `shift supervisor 2` = colDef(header = with_tooltip('shift supervisor 2','shift supervisor 2')),
+            # `theater ops specialist sr 1` = colDef(header = with_tooltip('theater ops specialist sr 1','theater ops specialist sr 1')),
+            # `theater ops specialist sr 2` = colDef(header = with_tooltip('theater ops specialist sr 2','theater ops specialist sr 2')),
+            # `theater ops specialist sr 3` = colDef(header = with_tooltip('theater ops specialist sr 3','theater ops specialist sr 3')),
+            # `theater ops specialist 1` = colDef(header = with_tooltip('theater ops specialist 1','theater ops specialist 1')),
+            # `theater ops specialist 2` = colDef(header = with_tooltip('theater ops specialist 2','theater ops specialist 2')),
+            # `theater ops specialist 3` = colDef(header = with_tooltip('theater ops specialist 3','theater ops specialist 3'))
             )
           )
 ```
