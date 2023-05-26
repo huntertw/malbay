@@ -10,7 +10,6 @@ format:
     toc-title: Contents
     css: styles.css
     code-fold: true
-    output-file: 'index'
 ---
 
 
@@ -79,6 +78,7 @@ main_dat <- readxl::read_xlsx(here(cfg$datapath, cfg$client_main)) %>%
   setNames(make.names(names(.)))
 
 glimpse(main_dat)
+
 ```
 
 
@@ -225,120 +225,186 @@ OTHER IDEAS TO DISCUSS WITH TEAM:
 
 ## Views
 
-### Hours by Department Alignment
+### Hours by Categories
 
-This first summary view provides the sum of hours by department alignment.
-The right side also provides a count of unique roles contributing to the department efforts.
+This first summary view provides the sum of hours by a few different categories.
 
 ```{r deptmnt}
+#| fig-width: 9
+#| fig-height: 6
+#| column: screen-inset-right
+
 # prepare data
-hours_by_department <- main_dat %>% 
-  group_by(Department.Alignment) %>% 
-  summarize(Hours = sum(Total.Hours),
-            Num.Positions = length(unique(Current.Position))) %>% 
-  mutate(Department.Alignment = forcats::fct_infreq(Department.Alignment, w = Hours))
+hours_by_ps <- main_dat %>% 
+  group_by(Position.Specialty) %>% 
+  summarize(Hours = sum(Total.Hours)) %>% 
+  arrange(Hours)
+  # mutate(Position.Specialty = forcats::fct_infreq(Position.Specialty, w = Hours))
+
+hours_by_of <- main_dat %>% 
+  group_by(Operational.Function) %>% 
+  summarize(Hours = sum(Total.Hours)) %>% 
+  arrange(Hours)
+
+hours_by_sc <-  main_dat %>% 
+  group_by(Scalability) %>% 
+  summarize(Hours = sum(Total.Hours)) %>% 
+  arrange(Hours)
+
+hours_by_role <- main_dat %>% 
+  group_by(Current.Position) %>% 
+  summarize(Hours = sum(Total.Hours)) %>% 
+  arrange(Hours)
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
 
-leftside <- hours_by_department %>% 
-  ggplot(aes(y = forcats::fct_rev(Department.Alignment))) +
-  geom_col(aes(x = Hours, fill = Department.Alignment)) +
-  labs(title = "Hours by department",
-     y = "Task", 
-     x = paste0("Hours per ", xlab)) + 
-  scale_fill_manual(values = my_pallette) +
+tl <- hours_by_ps %>% 
+  ggplot(aes(y = forcats::fct_inorder(Position.Specialty))) +
+  geom_col(aes(x = Hours), fill = my_pallette[3]) +
+  labs(title = "...position specialty",
+     y = NULL, 
+     x = paste0('Hours per ', xlab)) + 
+  # scale_fill_manual(values = my_pallette[2]) +
   theme(legend.position = "none")
   # scale_fill_brewer(palette = "Set3")
 
-rightside <- hours_by_department %>% 
-  ggplot(aes(y = forcats::fct_rev(Department.Alignment))) +
-  geom_col(aes(x = Num.Positions, fill = Department.Alignment)) +
-  labs(title = "# Positions",
+tr <- hours_by_of %>%
+  ggplot(aes(y = forcats::fct_inorder(Operational.Function))) +
+  geom_col(aes(x = Hours), fill = my_pallette[2]) +
+  labs(title = "...operational function",
      y = NULL,
-     x = "Positions") +
-  scale_fill_manual(values = my_pallette) +
-  theme(legend.position = "none",
-        axis.text.y = element_blank())
-
-leftside + rightside + plot_layout(widths = c(3,1))
-```
-
-This second version provides a summary adjusted by the number of roles associated with each department.
-
-:::{.callout-important}
-
-I think I'm going to drop this after the adjustments I made to the graph above.
-
-:::
-
-
-```{r}
-# prepare data
-hours_by_department <- main_dat %>% 
-  group_by(Department.Alignment) %>% 
-  summarize(Hours = sum(Total.Hours),
-            num_pos = length(unique(Current.Position)),
-            hours_per_position = Hours / num_pos) %>% 
-  mutate(Department.Alignment = forcats::fct_infreq(Department.Alignment, w = Hours))
-
-xlab <- unique(main_dat$period)
-stopifnot("period must be on the same time frame" = length(xlab) == 1)
-
-hours_by_department %>% 
-  ggplot(aes(y = forcats::fct_rev(Department.Alignment))) +
-  geom_col(aes(x = hours_per_position, fill = Department.Alignment)) +
-  labs(title = "Hours by department divided by number unique roles",
-     y = "Task", 
-     x = paste0("Average hours per ", xlab)) + 
-  scale_fill_manual(values = my_pallette) +
+     x = paste0("Hours per ", xlab)) + 
+  # scale_fill_manual(values = my_pallette) +
   theme(legend.position = "none")
 
+bl <- hours_by_sc %>% 
+  ggplot(aes(y = forcats::fct_inorder(Scalability))) +
+  geom_col(aes(x = Hours), fill = my_pallette[4]) +
+  labs(title = "...scalability",
+     y = NULL,
+     x = paste0('Hours per ', xlab)) + 
+  # scale_fill_manual(values = my_pallette) +
+  theme(legend.position = "none")
 
+br <- hours_by_role %>% 
+  ggplot(aes(y = forcats::fct_inorder(Current.Position))) +
+  geom_col(aes(x = Hours), fill = my_pallette[5]) +
+  labs(title = "...current position",
+     y = NULL,
+     x = paste0('Hours per ', xlab)) + 
+  # scale_fill_manual(values = my_pallette) +
+  theme(legend.position = "none")
 
+layout <- "
+AAABBB
+CCDDDD
+"
+# 
+wrap_plots(A = tl, B = tr, C = bl, D = br, design = layout) + 
+  plot_annotation(title = paste0("Hours per ", xlab, " by ...")) & 
+  xlab(NULL)
+
+# leftside
 ```
 
 
 
-### Hours by Task and Department
+### Hours by Task, Position Specialty, and Scalability
 
-The view provides the hours by task and department.
-
-```{r tskDeptmnt}
+```{r tskpss}
 #| fig-width: 8.5
 #| fig-height: 12
 #| column: screen-inset-right
 
 # prepare data
-hours_by_item <- main_dat %>% 
-  group_by(Task, Department.Alignment) %>% 
+hours_by_tps <- main_dat %>% 
+  group_by(Task, Position.Specialty, Scalability) %>% 
   summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
-  arrange(desc(Hours)) %>% 
-  mutate(Task = forcats::fct_inorder(Task)) 
+  arrange(Hours)
+
+hours_by_tps %>%
+  # mutate(over_under_pct = Hours / Hours.Required-1) %>%
+  # select(Task, Hours, Department.Alignment) %>%
+  ggplot(aes(y = forcats::fct_inorder(Task))) +
+  geom_col(aes(x = Hours, fill = Position.Specialty)) +
+  facet_grid(rows = vars(Position.Specialty), 
+             cols = vars(Scalability),
+             scales = "free_y", space = "free", 
+             labeller = label_wrap_gen(width = 20, multi_line = TRUE)) +
+  labs(title = "Hours by task, position specialty, and scalability",
+     y = "Task",
+     x = paste0("Hours per ", xlab)) +
+  scale_fill_manual(values = my_pallette) + 
+  theme(legend.position = "none",
+        strip.text.y.right = element_text(angle=0))
+  
+```
+### Hours by Task, Position Speciality, Current Position, and Scalability
+
+```{r tskpscps}
+#| fig-width: 10
+#| fig-height: 13
+#| column: screen-inset-right
+
+
+# prepare data
+hours_by_tpscps <- main_dat %>%
+  # full_join(workitems_dat %>% select(Task, Hours.Required), by = join_by(Task)) %>% 
+  # filter(!is.na(Total.Hours)) %>% 
+  group_by(Task, Current.Position, Position.Specialty, Scalability) %>%
+  summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
+  # full_join(workitems_dat) %>%
+  arrange(Hours, Current.Position, Position.Specialty)
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
   
   
-# # Create graph
-# hours_by_item %>% 
-#   ggplot(aes(y = forcats::fct_rev(item))) +
-#   geom_col(aes(x = hours),
-#            fill = mbcol) +
-#   geom_point(aes(x = hours_required)) +
-#   labs(title = "Hours by work item",
-#        y = "Work item", 
-#        x = paste0("Hours per ", xlab))
+# Create graph
+hours_by_tpscps %>% 
+  ggplot() +
+  geom_col(aes(x = Hours, y = forcats::fct_inorder(Task), fill = Position.Specialty), 
+           position = "dodge") +
+  facet_nested(rows = vars(Position.Specialty, Current.Position),
+               cols = vars(Scalability),
+             space = "free_y", scale = "free",
+             labeller = label_wrap_gen(width = 16, multi_line = TRUE)) +
+  labs(title = "Hours by task, position speciality, current position, and scalability",
+       y = "Task", 
+       x = paste0("Hours per ", xlab)) +
+  theme(legend.position = "none",
+        strip.text.y.right = element_text(angle=0)) +
+  scale_fill_manual(values = my_pallette)
 
-hours_by_item %>%
+```
+
+
+
+
+### Hours by Task, Operational Function, and Scalability
+
+```{r tskofs}
+#| fig-width: 8.5
+#| fig-height: 12
+#| column: screen-inset-right
+
+# prepare data
+hours_by_tofs <- main_dat %>% 
+  group_by(Task, Operational.Function, Scalability) %>% 
+  summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
+  arrange(Operational.Function, Hours)
+
+hours_by_tofs %>%
   # mutate(over_under_pct = Hours / Hours.Required-1) %>%
   # select(Task, Hours, Department.Alignment) %>%
-  ggplot(aes(y = forcats::fct_rev(Task))) +
-  geom_col(aes(x = Hours, fill = Department.Alignment)) +
-  facet_grid(rows = vars(Department.Alignment), 
+  ggplot(aes(y = forcats::fct_inorder(Task))) +
+  geom_col(aes(x = Hours, fill = Operational.Function)) +
+  facet_grid(rows = vars(Operational.Function), 
+             cols = vars(Scalability),
              scales = "free_y", space = "free", 
              labeller = label_wrap_gen(width = 20, multi_line = TRUE)) +
-  labs(title = "Hours by task",
+  labs(title = "Hours by task, operational function, and scalability",
      y = "Task",
      x = paste0("Hours per ", xlab)) +
   scale_fill_manual(values = my_pallette) + 
@@ -347,50 +413,44 @@ hours_by_item %>%
   
 ```
 
+### Hours by Task, Operational Function, Current Position, and Scalability
 
-### Hours by Task, Position, and Department
-
-The view provides the hours by task and department.
-
-```{r tskPosDept}
+```{r tskofscps}
 #| fig-width: 10
 #| fig-height: 13
 #| column: screen-inset-right
 
 
 # prepare data
-hours_by_item_role <- main_dat %>%
+hours_by_tpscps <- main_dat %>%
   # full_join(workitems_dat %>% select(Task, Hours.Required), by = join_by(Task)) %>% 
   # filter(!is.na(Total.Hours)) %>% 
-  group_by(Task, Current.Position, Department.Alignment) %>%
+  group_by(Task, Current.Position, Operational.Function, Scalability) %>%
   summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
   # full_join(workitems_dat) %>%
-  arrange(desc(Hours)) %>% 
-  mutate(item = forcats::fct_inorder(Task)) 
+  arrange(Hours, Current.Position, Operational.Function)
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
   
   
 # Create graph
-hours_by_item_role %>% 
+hours_by_tpscps %>% 
   ggplot() +
-  geom_col(aes(x = Hours, y = Task, fill = Department.Alignment), 
+  geom_col(aes(x = Hours, y = forcats::fct_inorder(Task), fill = Operational.Function), 
            position = "dodge") +
-  facet_nested(rows = vars(Current.Position, Department.Alignment),
+  facet_nested(rows = vars(Operational.Function, Current.Position),
+               cols = vars(Scalability),
              space = "free_y", scale = "free",
-             labeller = label_wrap_gen(width = 20, multi_line = TRUE)) +
-  labs(title = "Hours by Position and Task",
+             labeller = label_wrap_gen(width = 16, multi_line = TRUE)) +
+  labs(title = "Hours by task, operational function, current position, and scalability",
        y = "Task", 
        x = paste0("Hours per ", xlab)) +
   theme(legend.position = "none",
         strip.text.y.right = element_text(angle=0)) +
   scale_fill_manual(values = my_pallette)
 
-
-
 ```
-
 ### Heatmap
 
 Finally, this view highlights where time is being spent by the team and 
@@ -413,7 +473,7 @@ hm_dat <- main_dat %>%
   as.data.frame()
 
 hm_dat$`General Counsel`[1] <-  0 # need at least two items with a number
-
+hm_dat$`CFO`[1] <-  0 # need at least two items with a number
  
 
 with_tooltip <- function(value, tooltip, ...) {
@@ -469,7 +529,9 @@ reactable(hm_dat,
 Given limitations on hours... where should I focus next?
 
 Priorities:
-1. Hang on actual website?
+
+1. ~~Hang on actual website?~~
+1. ~~Incorporate new version of data~~
 1. Make useful edits to heatmap  
     + add in grouped skill for each item
     + Add ability to switch between number or name or title
@@ -479,6 +541,7 @@ Priorities:
 :::
 
 Longer term ideas: 
+
 1. Create PDF or Word output from report results
 1. Create Shiny app version of this content
 1. Create data collection tool

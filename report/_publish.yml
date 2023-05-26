@@ -1,0 +1,4 @@
+- source: project
+  netlify:
+    - id: 99e60131-3a7a-4c9f-9e91-e3bd1b7a7747
+      url: 'https://tourmaline-fox-59ab1f.netlify.app'
