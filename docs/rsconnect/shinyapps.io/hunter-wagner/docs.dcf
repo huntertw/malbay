@@ -1,0 +1,11 @@
+name: docs
+title:
+username:
+account: hunter-wagner
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9160139
+bundleId: 7247774
+url: https://hunter-wagner.shinyapps.io/docs/
+when: 1684759944.79222
+lastSyncTime: 1684759944.79223
