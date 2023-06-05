@@ -7,6 +7,7 @@
 - How do things change as the quality of work changes (increases or decreases)?
 
 
+
 # Notes from discussion on 04/21/2023
 - Want another column in to categorize
   - Skill sets within the Work Item table
@@ -15,10 +16,9 @@
 - 
 
 ### Next Steps
-- I will focus hard on the heatmap and finalizing the view
-- Reduce the font size on heat map
-- add in grouped skill for each item
-- Add ability to switch between number or name or title
+- Wait for feedback from team
+- Start exploring Shiny version and track time
+- What is going on with the CSS?
 
 # Future work...
 - Add in ability to organize graphs by teams

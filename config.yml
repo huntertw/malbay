@@ -3,7 +3,7 @@ default:
   main: "fake_data.csv"
   workitems: "work_items.csv"
   roles: "roles.csv"
-  client_main: "sample-workload-model-051923.xlsx"
+  client_main: "sample-workload-model-060123.xlsx"
   
 production:
   dataset: "data.csv"

@@ -35,6 +35,8 @@ library(reactablefmtr)
 library(tippy)
 library(ggh4x)
 library(patchwork)
+library(forcats)
+library(tidytext)
 
 
 cfg <- config::get()
@@ -321,17 +323,22 @@ wrap_plots(A = tl, B = tr, C = bl, D = br, design = layout) +
 hours_by_tps <- main_dat %>% 
   group_by(Task, Position.Specialty, Scalability) %>% 
   summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
-  arrange(Hours)
+  # mutate(Task = fct_rev(fct_infreq(Task, w = Hours))) %>% 
+  mutate(Task = reorder_within(
+    Task, Hours, Position.Specialty)
+    ) # to get the right ordering
 
 hours_by_tps %>%
   # mutate(over_under_pct = Hours / Hours.Required-1) %>%
   # select(Task, Hours, Department.Alignment) %>%
-  ggplot(aes(y = forcats::fct_inorder(Task))) +
+  # ggplot(aes(y = forcats::fct_inorder(Task))) +
+  ggplot(aes(y = Task)) +
   geom_col(aes(x = Hours, fill = Position.Specialty)) +
   facet_grid(rows = vars(Position.Specialty), 
              cols = vars(Scalability),
              scales = "free_y", space = "free", 
              labeller = label_wrap_gen(width = 20, multi_line = TRUE)) +
+  scale_y_reordered() + # to get the right ordering
   labs(title = "Hours by task, position specialty, and scalability",
      y = "Task",
      x = paste0("Hours per ", xlab)) +
@@ -355,7 +362,7 @@ hours_by_tpscps <- main_dat %>%
   group_by(Task, Current.Position, Position.Specialty, Scalability) %>%
   summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
   # full_join(workitems_dat) %>%
-  arrange(Hours, Current.Position, Position.Specialty)
+  mutate(Task = reorder_within(Task, Hours, list(Current.Position, Position.Specialty)))
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
@@ -364,7 +371,7 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 # Create graph
 hours_by_tpscps %>% 
   ggplot() +
-  geom_col(aes(x = Hours, y = forcats::fct_inorder(Task), fill = Position.Specialty), 
+  geom_col(aes(x = Hours, y = Task, fill = Position.Specialty), 
            position = "dodge") +
   facet_nested(rows = vars(Position.Specialty, Current.Position),
                cols = vars(Scalability),
@@ -375,6 +382,7 @@ hours_by_tpscps %>%
        x = paste0("Hours per ", xlab)) +
   theme(legend.position = "none",
         strip.text.y.right = element_text(angle=0)) +
+  scale_y_reordered() +
   scale_fill_manual(values = my_pallette)
 
 ```
@@ -393,12 +401,12 @@ hours_by_tpscps %>%
 hours_by_tofs <- main_dat %>% 
   group_by(Task, Operational.Function, Scalability) %>% 
   summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
-  arrange(Operational.Function, Hours)
+  mutate(Task = reorder_within(Task, Hours, Operational.Function))
 
 hours_by_tofs %>%
   # mutate(over_under_pct = Hours / Hours.Required-1) %>%
   # select(Task, Hours, Department.Alignment) %>%
-  ggplot(aes(y = forcats::fct_inorder(Task))) +
+  ggplot(aes(y = Task)) +
   geom_col(aes(x = Hours, fill = Operational.Function)) +
   facet_grid(rows = vars(Operational.Function), 
              cols = vars(Scalability),
@@ -407,6 +415,7 @@ hours_by_tofs %>%
   labs(title = "Hours by task, operational function, and scalability",
      y = "Task",
      x = paste0("Hours per ", xlab)) +
+  scale_y_reordered()+
   scale_fill_manual(values = my_pallette) + 
   theme(legend.position = "none",
         strip.text.y.right = element_text(angle=0))
@@ -428,7 +437,8 @@ hours_by_tpscps <- main_dat %>%
   group_by(Task, Current.Position, Operational.Function, Scalability) %>%
   summarize(Hours = sum(Total.Hours), .groups = "drop") %>% 
   # full_join(workitems_dat) %>%
-  arrange(Hours, Current.Position, Operational.Function)
+  mutate(Task = reorder_within(Task, Hours,
+                               list(Current.Position, Operational.Function)))
 
 xlab <- unique(main_dat$period)
 stopifnot("period must be on the same time frame" = length(xlab) == 1)
@@ -437,7 +447,7 @@ stopifnot("period must be on the same time frame" = length(xlab) == 1)
 # Create graph
 hours_by_tpscps %>% 
   ggplot() +
-  geom_col(aes(x = Hours, y = forcats::fct_inorder(Task), fill = Operational.Function), 
+  geom_col(aes(x = Hours, y = Task, fill = Operational.Function), 
            position = "dodge") +
   facet_nested(rows = vars(Operational.Function, Current.Position),
                cols = vars(Scalability),
@@ -448,6 +458,7 @@ hours_by_tpscps %>%
        x = paste0("Hours per ", xlab)) +
   theme(legend.position = "none",
         strip.text.y.right = element_text(angle=0)) +
+  scale_y_reordered() +
   scale_fill_manual(values = my_pallette)
 
 ```
